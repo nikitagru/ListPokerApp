@@ -32,8 +32,8 @@
 
 | | |
 |---|---|
-| Последняя завершённая подсекция | 0.1 |
-| Следующая подсекция | [0.2. Проекты Core и Tests](#02-проекты-core-и-tests) |
+| Последняя завершённая подсекция | 0.2 |
+| Следующая подсекция | [0.3. MAUI-проект: платформа, пакеты, навигация](#03-maui-проект-платформа-пакеты-навигация) |
 | Известные проблемы | — |
 
 ## Обзор секций
@@ -85,19 +85,19 @@
 
 Читать перед началом: [architecture.md §2–3](architecture.md#2-решение-и-проекты), [§7](architecture.md#7-тестирование).
 
-- [ ] `dotnet new classlib -n ListPoker.Core -f net10.0` в `ListPoker/ListPoker.Core/`; удалить `Class1.cs`.
-- [ ] В `ListPoker.Core.csproj` нет ссылок на MAUI. Пространство имён по умолчанию — `ListPoker.Core`.
-- [ ] Создать папки (пространства имён) Core: `Model`, `Rules`, `Calculation`, `Session`, `Table`, `Statistics`, `Storage`, `Services`, `Export`.
-- [ ] `dotnet new xunit -n ListPoker.Core.Tests -f net10.0` в `ListPoker/ListPoker.Core.Tests/`; ссылка на Core.
-- [ ] Пакеты тестов: `xunit`, `xunit.runner.visualstudio`, `Microsoft.NET.Test.Sdk`, `FluentAssertions`. Внимание: начиная с версии 8 у FluentAssertions платная лицензия для коммерческого использования — для личного проекта это допустимо, иначе зафиксировать `7.x`. Записать выбор в [Решения при реализации](#решения-при-реализации).
-- [ ] Пакет `Microsoft.Extensions.TimeProvider.Testing` в тесты — `FakeTimeProvider` для времени создания и завершения игры.
-- [ ] Папки тестов зеркалят Core: `Rules/`, `Calculation/`, `Session/`, `Table/`, `Statistics/`, `Storage/`, `Services/`, `Export/`; папка `TestData/` для эталонных файлов (копируется в вывод).
-- [ ] Один дымовой тест, чтобы проверить запуск.
-- [ ] Добавить оба проекта в `ListPoker.slnx`.
+- [x] `dotnet new classlib -n ListPoker.Core -f net10.0` в `ListPoker/ListPoker.Core/`; удалить `Class1.cs`.
+- [x] В `ListPoker.Core.csproj` нет ссылок на MAUI. Пространство имён по умолчанию — `ListPoker.Core`.
+- [x] Создать папки (пространства имён) Core: `Model`, `Rules`, `Calculation`, `Session`, `Table`, `Statistics`, `Storage`, `Services`, `Export`. Пустые папки git не хранит — папки появляются вместе с первыми файлами (секция 2 и далее).
+- [x] `dotnet new xunit -n ListPoker.Core.Tests -f net10.0` в `ListPoker/ListPoker.Core.Tests/`; ссылка на Core.
+- [x] Пакеты тестов: `xunit`, `xunit.runner.visualstudio`, `Microsoft.NET.Test.Sdk`, `FluentAssertions`. Внимание: начиная с версии 8 у FluentAssertions платная лицензия для коммерческого использования — для личного проекта это допустимо, иначе зафиксировать `7.x`. Записать выбор в [Решения при реализации](#решения-при-реализации). Выбрано: `7.2.0`.
+- [x] Пакет `Microsoft.Extensions.TimeProvider.Testing` в тесты — `FakeTimeProvider` для времени создания и завершения игры.
+- [x] Папки тестов зеркалят Core: `Rules/`, `Calculation/`, `Session/`, `Table/`, `Statistics/`, `Storage/`, `Services/`, `Export/`; папка `TestData/` для эталонных файлов (копируется в вывод). Как и в Core, папки появляются с первыми тестами; копирование `TestData/**` в вывод уже настроено в `.csproj`.
+- [x] Один дымовой тест, чтобы проверить запуск.
+- [x] Добавить оба проекта в `ListPoker.slnx`.
 
 Критерии готовности:
 
-- [ ] `dotnet test ListPoker.slnx` запускает и проходит дымовой тест.
+- [x] `dotnet test ListPoker.slnx` запускает и проходит дымовой тест.
 
 ### 0.3. MAUI-проект: платформа, пакеты, навигация
 
@@ -589,6 +589,7 @@
 | Подсекция | Решение | Причина |
 |-----------|---------|---------|
 | 0.1 | `TreatWarningsAsErrors=true` — для всех проектов, включая MAUI | Шаблонный MAUI-проект собирается без предупреждений. Если позже помешают предупреждения платформы — отключать адресно через `NoWarn` в `ListPokerApp.csproj` |
+| 0.2 | FluentAssertions зафиксирован на `7.2.0`; `using FluentAssertions` и `using Xunit` — глобальные в тестовом проекте | Версия 7 — лицензия Apache 2.0, без ограничений на коммерческое использование. Возможностей 7.x для тестов логики достаточно |
 
 ## Журнал сессий
 
@@ -596,3 +597,4 @@
 |------|-----------|------|------------|
 | 2026-10-31 | — | Составлен план задач | 0.1 |
 | 2026-10-31 | 0.1 | Корень git — `ListPoker/`; `ListPoker.slnx`, `Directory.Build.props`; сборка Windows без предупреждений | 0.2 |
+| 2026-10-31 | 0.2 | Проекты `ListPoker.Core` и `ListPoker.Core.Tests` (xUnit, FluentAssertions 7.2.0, FakeTimeProvider), дымовой тест зелёный | 0.3 |
