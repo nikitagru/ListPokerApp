@@ -65,21 +65,21 @@
 
 Сейчас `.git`, `.gitignore`, `ListPokerApp.slnx` и `specs/` лежат внутри `ListPoker/ListPokerApp/`. Корень репозитория должен стать `ListPoker/`, иначе новые проекты окажутся вне git.
 
-- [ ] Закрыть Visual Studio (она держит `.vs/` и может мешать переносу).
-- [ ] Перенести `.git/` и `.gitignore` из `ListPoker/ListPokerApp/` в `ListPoker/`.
-- [ ] Перенести `specs/` в `ListPoker/specs/`.
-- [ ] Перенести `ListPokerApp.slnx` в `ListPoker/` и переименовать в `ListPoker.slnx`; путь проекта внутри — `ListPokerApp/ListPokerApp.csproj`.
-- [ ] Удалить старые `ListPokerApp/.vs/`, `bin/`, `obj/` (их пересоздаст сборка).
-- [ ] Проверить `.gitignore`: `bin/`, `obj/`, `.vs/`, `*.user` игнорируются во всех подпапках; добавить `TestResults/`.
-- [ ] `git status` показывает перенос файлов как переименования (`git add -A`, затем `git status`), посторонних файлов нет.
-- [ ] Обновить в [architecture.md §2](architecture.md#2-решение-и-проекты) абзац «Сейчас решение и документация лежат внутри папки `ListPokerApp`» — перенос выполнен.
-- [ ] Создать `ListPoker/Directory.Build.props` с общими настройками: `Nullable=enable`, `ImplicitUsings=enable`, `LangVersion=latest`, `TreatWarningsAsErrors=true` (для Core и Tests обязательно; для App — по возможности), `Deterministic=true`.
-- [ ] Коммит «Перенос решения и документации на уровень ListPoker/».
+- [x] Закрыть Visual Studio (она держит `.vs/` и может мешать переносу).
+- [x] Перенести `.git/` и `.gitignore` из `ListPoker/ListPokerApp/` в `ListPoker/`.
+- [x] Перенести `specs/` в `ListPoker/specs/`.
+- [x] Перенести `ListPokerApp.slnx` в `ListPoker/` и переименовать в `ListPoker.slnx`; путь проекта внутри — `ListPokerApp/ListPokerApp.csproj`.
+- [x] Удалить старые `ListPokerApp/.vs/`, `bin/`, `obj/` (их пересоздаст сборка).
+- [x] Проверить `.gitignore`: `bin/`, `obj/`, `.vs/`, `*.user` игнорируются во всех подпапках; `TestResults/` уже покрыт шаблоном `[Tt]est[Rr]esult*/`.
+- [x] `git status` показывает перенос файлов как переименования (`git add -A`, затем `git status`), посторонних файлов нет.
+- [x] Обновить в [architecture.md §2](architecture.md#2-решение-и-проекты) абзац «Сейчас решение и документация лежат внутри папки `ListPokerApp`» — перенос выполнен.
+- [x] Создать `ListPoker/Directory.Build.props` с общими настройками: `Nullable=enable`, `ImplicitUsings=enable`, `LangVersion=latest`, `TreatWarningsAsErrors=true` (для Core и Tests обязательно; для App — по возможности), `Deterministic=true`.
+- [x] Коммит «Перенос решения и документации на уровень ListPoker/».
 
 Критерии готовности:
 
-- [ ] `git -C d:/c_sharp/ListPoker log` показывает прежнюю историю.
-- [ ] `dotnet build ListPoker.slnx` из `ListPoker/` собирает MAUI-проект.
+- [x] `git -C d:/c_sharp/ListPoker log` показывает прежнюю историю.
+- [x] `dotnet build ListPoker.slnx` из `ListPoker/` собирает MAUI-проект.
 
 ### 0.2. Проекты Core и Tests
 
