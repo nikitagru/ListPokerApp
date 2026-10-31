@@ -32,15 +32,15 @@
 
 | | |
 |---|---|
-| Последняя завершённая подсекция | 0.2 |
-| Следующая подсекция | [0.3. MAUI-проект: платформа, пакеты, навигация](#03-maui-проект-платформа-пакеты-навигация) |
+| Последняя завершённая подсекция | 0.3 (секция 0 закрыта) |
+| Следующая подсекция | [1.1. Таблица из пяти частей: прокрутка и масштаб](#11-таблица-из-пяти-частей-прокрутка-и-масштаб) |
 | Известные проблемы | — |
 
 ## Обзор секций
 
 | # | Секция | Подсекции | Готово |
 |:-:|--------|-----------|:------:|
-| 0 | [Каркас](#секция-0-каркас) | 0.1 – 0.3 | ☐ |
+| 0 | [Каркас](#секция-0-каркас) | 0.1 – 0.3 | ☑ |
 | 1 | [Прототип рисков](#секция-1-прототип-рисков) | 1.1 – 1.3 | ☐ |
 | 2 | [Модель, правила, вычисления](#секция-2-модель-правила-вычисления) | 2.1 – 2.3 | ☐ |
 | 3 | [Сессия ввода](#секция-3-сессия-ввода) | 3.1 – 3.3 | ☐ |
@@ -105,27 +105,27 @@
 
 Целевые платформы и пакеты:
 
-- [ ] В `ListPokerApp.csproj` по умолчанию собирается только `net10.0-windows10.0.19041.0`. Остальные платформы оставить в файле под условием, например `<TargetFrameworks Condition="'$(EnableMobileTargets)' == 'true'">…android;…ios;…maccatalyst</TargetFrameworks>`.
-- [ ] `ApplicationTitle` — «Расписной покер», `ApplicationId` — осмысленный (например `ru.listpoker.app`).
-- [ ] Ссылка на `ListPoker.Core`.
-- [ ] Пакеты: `CommunityToolkit.Mvvm`, `CommunityToolkit.Maui`, `Microsoft.Maui.Graphics.Skia`.
-- [ ] В `MauiProgram`: `.UseMauiCommunityToolkit()`.
+- [x] В `ListPokerApp.csproj` по умолчанию собирается только `net10.0-windows10.0.19041.0`. Остальные платформы оставить в файле под условием, например `<TargetFrameworks Condition="'$(EnableMobileTargets)' == 'true'">…android;…ios;…maccatalyst</TargetFrameworks>`.
+- [x] `ApplicationTitle` — «Расписной покер», `ApplicationId` — осмысленный (например `ru.listpoker.app`).
+- [x] Ссылка на `ListPoker.Core`.
+- [x] Пакеты: `CommunityToolkit.Mvvm`, `CommunityToolkit.Maui`, `Microsoft.Maui.Graphics.Skia`. Версии: Mvvm 8.4.2, Maui 15.0.1, Graphics.Skia — как MAUI (см. решения).
+- [x] В `MauiProgram`: `.UseMauiCommunityToolkit()`.
 
 Структура и навигация:
 
-- [ ] Удалить шаблонные `MainPage.xaml(.cs)` и `Resources/Images/dotnet_bot.png` (и его строку в `.csproj`).
-- [ ] Папки: `Pages/`, `ViewModels/`, `Controls/ScoreTable/`, `Services/` (интерфейсы и кроссплатформенные реализации), `Platforms/Windows/Services/`.
-- [ ] Пустые страницы с заголовком: `StartPage`, `NewGamePage`, `GamePage`, `PlayersPage`, `PlayerGamesPage`, и к ним пустые ViewModel на `ObservableObject`.
-- [ ] `AppShell`: стартовая страница — `StartPage`, остальные — маршруты через `Routing.RegisterRoute`. Скрыть шапку и меню Shell (одно окно без вкладок, свои кнопки «назад»).
-- [ ] `INavigationService` (`GoToStart`, `GoToNewGame`, `GoToGame(Guid id)`, `GoToPlayers`, `GoToPlayerGames(Guid playerId)`) и реализация `ShellNavigationService`; параметры передаются через query-параметры Shell.
-- [ ] `IDialogService` (`ConfirmAsync(title, message, accept, cancel)`, `AlertAsync(...)`) поверх `DisplayAlert`.
-- [ ] Регистрация в DI: страницы и ViewModel — transient, сервисы — синглтоны.
-- [ ] На каждой пустой странице — временные кнопки перехода, чтобы проверить навигацию.
+- [x] Удалить шаблонные `MainPage.xaml(.cs)` и `Resources/Images/dotnet_bot.png` (и его строку в `.csproj`).
+- [x] Папки: `Pages/`, `ViewModels/`, `Controls/ScoreTable/`, `Services/` (интерфейсы и кроссплатформенные реализации), `Platforms/Windows/Services/`. Пустые `Controls/ScoreTable/` и `Platforms/Windows/Services/` в git не попадут — наполняются в секции 1.
+- [x] Пустые страницы с заголовком: `StartPage`, `NewGamePage`, `GamePage`, `PlayersPage`, `PlayerGamesPage`, и к ним пустые ViewModel на `ObservableObject`.
+- [x] `AppShell`: стартовая страница — `StartPage`, остальные — маршруты через `Routing.RegisterRoute`. Скрыть шапку и меню Shell (одно окно без вкладок, свои кнопки «назад»).
+- [x] `INavigationService` (`GoToStart`, `GoToNewGame`, `GoToGame(Guid id)`, `GoToPlayers`, `GoToPlayerGames(Guid playerId)`) и реализация `ShellNavigationService`; параметры передаются через query-параметры Shell. Добавлен ещё `GoBack()`; имена маршрутов — в `NavigationRoutes`.
+- [x] `IDialogService` (`ConfirmAsync(title, message, accept, cancel)`, `AlertAsync(...)`) поверх `DisplayAlertAsync` (в .NET 10 `DisplayAlert` устарел).
+- [x] Регистрация в DI: страницы и ViewModel — transient, сервисы — синглтоны.
+- [x] На каждой пустой странице — временные кнопки перехода, чтобы проверить навигацию.
 
 Критерии готовности:
 
-- [ ] `dotnet build` без предупреждений, приложение запускается под Windows, переходы между всеми пятью страницами работают.
-- [ ] Коммит «Секция 0: каркас решения».
+- [x] `dotnet build` без предупреждений, приложение запускается под Windows, переходы между всеми пятью страницами работают.
+- [x] Коммит «Секция 0: каркас решения».
 
 ---
 
@@ -590,6 +590,9 @@
 |-----------|---------|---------|
 | 0.1 | `TreatWarningsAsErrors=true` — для всех проектов, включая MAUI | Шаблонный MAUI-проект собирается без предупреждений. Если позже помешают предупреждения платформы — отключать адресно через `NoWarn` в `ListPokerApp.csproj` |
 | 0.2 | FluentAssertions зафиксирован на `7.2.0`; `using FluentAssertions` и `using Xunit` — глобальные в тестовом проекте | Версия 7 — лицензия Apache 2.0, без ограничений на коммерческое использование. Возможностей 7.x для тестов логики достаточно |
+| 0.3 | Все пакеты MAUI (`Microsoft.Maui.Controls`, `Microsoft.Maui.Graphics.Skia`) закреплены свойством `MauiPackagesVersion` = `10.0.120` в `ListPokerApp.csproj` | Установленный workload даёт `MauiVersion` 10.0.20, а `CommunityToolkit.Maui` 15 требует ≥ 10.0.90. Обновлять — менять одно свойство |
+| 0.3 | Маршруты Shell: `//start`, `new-game`, `game?gameId=…`, `players`, `player-games?playerId=…`; параметры получают ViewModel через `IQueryAttributable` | Shell передаёт параметры запроса в `BindingContext` страницы, ViewModel не зависит от Shell |
+| 0.3 | Проверка навигации — через UI Automation из PowerShell (поиск окна по процессу, `InvokePattern` у кнопок, чтение текстов) | Позволяет проверять переходы без ручного щелканья; пригодится в следующих секциях |
 
 ## Журнал сессий
 
@@ -598,3 +601,4 @@
 | 2026-10-31 | — | Составлен план задач | 0.1 |
 | 2026-10-31 | 0.1 | Корень git — `ListPoker/`; `ListPoker.slnx`, `Directory.Build.props`; сборка Windows без предупреждений | 0.2 |
 | 2026-10-31 | 0.2 | Проекты `ListPoker.Core` и `ListPoker.Core.Tests` (xUnit, FluentAssertions 7.2.0, FakeTimeProvider), дымовой тест зелёный | 0.3 |
+| 2026-10-31 | 0.3 | Сборка только Windows, пакеты Toolkit/Mvvm/Skia, пять пустых страниц, Shell-маршруты, `INavigationService`, `IDialogService`, DI; переходы проверены | 1.1 |

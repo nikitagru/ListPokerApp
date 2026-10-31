@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ListPokerApp.ViewModels"
+             x:Class="ListPokerApp.Pages.PlayersPage"
+             x:DataType="vm:PlayersViewModel"
+             Title="Игроки">
+    <VerticalStackLayout Padding="24" Spacing="12">
+        <Label Text="Игроки" FontSize="24" />
+        <Button Text="Игры игрока (временно)" Command="{Binding OpenPlayerCommand}" HorizontalOptions="Start" />
+        <Button Text="Назад" Command="{Binding BackCommand}" HorizontalOptions="Start" />
+    </VerticalStackLayout>
+</ContentPage>

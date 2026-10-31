@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ListPokerApp.ViewModels"
+             x:Class="ListPokerApp.Pages.StartPage"
+             x:DataType="vm:StartViewModel"
+             Title="Расписной покер">
+    <VerticalStackLayout Padding="24" Spacing="12">
+        <Label Text="Расписной покер" FontSize="24" />
+        <Button Text="Новая игра" Command="{Binding NewGameCommand}" HorizontalOptions="Start" />
+        <Button Text="Игроки" Command="{Binding PlayersCommand}" HorizontalOptions="Start" />
+        <Button Text="Открыть игру (временно)" Command="{Binding OpenGameCommand}" HorizontalOptions="Start" />
+    </VerticalStackLayout>
+</ContentPage>
