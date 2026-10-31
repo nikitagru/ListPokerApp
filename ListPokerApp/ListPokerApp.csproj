@@ -22,9 +22,6 @@
 		<!-- Windows: приложение без MSIX-пакета -->
 		<WindowsPackageType>None</WindowsPackageType>
 
-		<!-- Единая версия пакетов MAUI: установленный workload старше, чем требует CommunityToolkit.Maui -->
-		<MauiPackagesVersion>10.0.120</MauiPackagesVersion>
-
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -43,9 +40,9 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="15.0.1" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiPackagesVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
-		<PackageReference Include="Microsoft.Maui.Graphics.Skia" Version="$(MauiPackagesVersion)" />
+		<PackageReference Include="Microsoft.Maui.Graphics.Skia" Version="$(MauiVersion)" />
 	</ItemGroup>
 
 	<ItemGroup>

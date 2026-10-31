@@ -108,7 +108,7 @@
 - [x] В `ListPokerApp.csproj` по умолчанию собирается только `net10.0-windows10.0.19041.0`. Остальные платформы оставить в файле под условием, например `<TargetFrameworks Condition="'$(EnableMobileTargets)' == 'true'">…android;…ios;…maccatalyst</TargetFrameworks>`.
 - [x] `ApplicationTitle` — «Расписной покер», `ApplicationId` — осмысленный (например `ru.listpoker.app`).
 - [x] Ссылка на `ListPoker.Core`.
-- [x] Пакеты: `CommunityToolkit.Mvvm`, `CommunityToolkit.Maui`, `Microsoft.Maui.Graphics.Skia`. Версии: Mvvm 8.4.2, Maui 15.0.1, Graphics.Skia — как MAUI (см. решения).
+- [x] Пакеты: `CommunityToolkit.Mvvm`, `CommunityToolkit.Maui`, `Microsoft.Maui.Graphics.Skia`. Версии: Mvvm 8.4.2, Toolkit.Maui 15.0.1, Graphics.Skia — `$(MauiVersion)`.
 - [x] В `MauiProgram`: `.UseMauiCommunityToolkit()`.
 
 Структура и навигация:
@@ -590,7 +590,7 @@
 |-----------|---------|---------|
 | 0.1 | `TreatWarningsAsErrors=true` — для всех проектов, включая MAUI | Шаблонный MAUI-проект собирается без предупреждений. Если позже помешают предупреждения платформы — отключать адресно через `NoWarn` в `ListPokerApp.csproj` |
 | 0.2 | FluentAssertions зафиксирован на `7.2.0`; `using FluentAssertions` и `using Xunit` — глобальные в тестовом проекте | Версия 7 — лицензия Apache 2.0, без ограничений на коммерческое использование. Возможностей 7.x для тестов логики достаточно |
-| 0.3 | Все пакеты MAUI (`Microsoft.Maui.Controls`, `Microsoft.Maui.Graphics.Skia`) закреплены свойством `MauiPackagesVersion` = `10.0.120` в `ListPokerApp.csproj` | Установленный workload даёт `MauiVersion` 10.0.20, а `CommunityToolkit.Maui` 15 требует ≥ 10.0.90. Обновлять — менять одно свойство |
+| 0.3 | Пакеты MAUI (`Microsoft.Maui.Controls`, `Microsoft.Maui.Graphics.Skia`) берут версию из workload — `$(MauiVersion)` | `CommunityToolkit.Maui` 15 требует MAUI ≥ 10.0.90. Workload обновлён (`dotnet workload update`) до 10.0.110; до обновления версия временно закреплялась вручную |
 | 0.3 | Маршруты Shell: `//start`, `new-game`, `game?gameId=…`, `players`, `player-games?playerId=…`; параметры получают ViewModel через `IQueryAttributable` | Shell передаёт параметры запроса в `BindingContext` страницы, ViewModel не зависит от Shell |
 | 0.3 | Проверка навигации — через UI Automation из PowerShell (поиск окна по процессу, `InvokePattern` у кнопок, чтение текстов) | Позволяет проверять переходы без ручного щелканья; пригодится в следующих секциях |
 
