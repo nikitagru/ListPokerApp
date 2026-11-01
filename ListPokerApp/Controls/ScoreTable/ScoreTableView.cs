@@ -1,3 +1,5 @@
+using ListPoker.Core.Model;
+
 namespace ListPokerApp.Controls.ScoreTable;
 
 /// <summary>
@@ -21,8 +23,8 @@ public sealed partial class ScoreTableView : ContentView
         nameof(TableScale),
         typeof(int),
         typeof(ScoreTableView),
-        100,
-        coerceValue: (_, value) => Math.Clamp((int)value, TableLayout.MinScalePercent, TableLayout.MaxScalePercent),
+        Settings.DefaultScale,
+        coerceValue: (_, value) => Math.Clamp((int)value, Settings.MinScale, Settings.MaxScale),
         propertyChanged: (view, _, _) => ((ScoreTableView)view).OnTableScaleChanged());
 
     /// <summary>Строка, которая должна оставаться в видимой области: при её смене и после смены масштаба. −1 — нет.</summary>

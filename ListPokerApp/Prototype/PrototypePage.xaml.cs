@@ -1,4 +1,5 @@
 using System.Globalization;
+using ListPoker.Core.Model;
 using ListPoker.Core.Session;
 using ListPokerApp.Controls.ScoreTable;
 using ListPokerApp.Services;
@@ -73,10 +74,10 @@ public partial class PrototypePage : ContentPage
         switch (key)
         {
             case { Ctrl: true, Key: InputKey.Plus }:
-                SetScale(ScoreTable.TableScale + TableLayout.ScaleStepPercent);
+                SetScale(ScoreTable.TableScale + Settings.ScaleStep);
                 break;
             case { Ctrl: true, Key: InputKey.Minus }:
-                SetScale(ScoreTable.TableScale - TableLayout.ScaleStepPercent);
+                SetScale(ScoreTable.TableScale - Settings.ScaleStep);
                 break;
             case { Ctrl: true, Key: InputKey.Digit0 }:
                 SetScale(100);
@@ -98,7 +99,7 @@ public partial class PrototypePage : ContentPage
         _zoomWheel %= WheelNotch;
         if (steps != 0)
         {
-            SetScale(ScoreTable.TableScale + steps * TableLayout.ScaleStepPercent);
+            SetScale(ScoreTable.TableScale + steps * Settings.ScaleStep);
         }
 
         Log(string.Create(CultureInfo.InvariantCulture, $"Ctrl+колесо {delta} → {ScoreTable.TableScale}%"));
@@ -155,9 +156,9 @@ public partial class PrototypePage : ContentPage
 
     private void OnRowDownClicked(object? sender, EventArgs e) => ShowTable(_table.WithActiveRow(_table.ActiveRow + 1));
 
-    private void OnZoomOutClicked(object? sender, EventArgs e) => SetScale(ScoreTable.TableScale - TableLayout.ScaleStepPercent);
+    private void OnZoomOutClicked(object? sender, EventArgs e) => SetScale(ScoreTable.TableScale - Settings.ScaleStep);
 
-    private void OnZoomInClicked(object? sender, EventArgs e) => SetScale(ScoreTable.TableScale + TableLayout.ScaleStepPercent);
+    private void OnZoomInClicked(object? sender, EventArgs e) => SetScale(ScoreTable.TableScale + Settings.ScaleStep);
 
     private void OnZoomResetClicked(object? sender, EventArgs e) => SetScale(100);
 

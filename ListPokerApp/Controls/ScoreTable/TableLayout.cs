@@ -1,3 +1,5 @@
+using ListPoker.Core.Model;
+
 namespace ListPokerApp.Controls.ScoreTable;
 
 /// <summary>
@@ -10,10 +12,6 @@ namespace ListPokerApp.Controls.ScoreTable;
 /// </remarks>
 public sealed class TableLayout
 {
-    public const int MinScalePercent = 75;
-    public const int MaxScalePercent = 200;
-    public const int ScaleStepPercent = 25;
-
     /// <summary>Итоговые строки: «Счёт» и «Место».</summary>
     public const int FooterRowCount = 2;
 
@@ -37,8 +35,8 @@ public sealed class TableLayout
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(playerCount);
         ArgumentOutOfRangeException.ThrowIfNegative(rowCount);
-        ArgumentOutOfRangeException.ThrowIfLessThan(scalePercent, MinScalePercent);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(scalePercent, MaxScalePercent);
+        ArgumentOutOfRangeException.ThrowIfLessThan(scalePercent, Settings.MinScale);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(scalePercent, Settings.MaxScale);
 
         PlayerCount = playerCount;
         RowCount = rowCount;

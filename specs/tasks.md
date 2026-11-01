@@ -32,8 +32,8 @@
 
 | | |
 |---|---|
-| Последняя завершённая подсекция | 1.3 (секция 1 закрыта) |
-| Следующая подсекция | [2.1. Модель данных](#21-модель-данных) |
+| Последняя завершённая подсекция | 2.1 |
+| Следующая подсекция | [2.2. Правила игры](#22-правила-игры) |
 | Известные проблемы | Снимок окна приложения, запущенного из песочницы Claude Code, белый — см. [Решения при реализации](#решения-при-реализации), 1.1 |
 
 ## Обзор секций
@@ -192,18 +192,18 @@
 
 Читать перед началом: [data-storage.md §1–2](data-storage.md#1-модель-данных), [architecture.md §4.1](architecture.md#41-model).
 
-- [ ] `RoundStage` (`Ascent`, `Plateau`, `Descent`, `FinalPlateau`), `GameStatus` (`InProgress`, `Finished`, `FinishedEarly`).
-- [ ] `sealed record GamePlayer(string Name, Guid PlayerId)`.
-- [ ] `sealed record PlayerRound(int? Bid, int? Tricks, bool Dark)`.
-- [ ] `sealed record Round(int Number, int Cards, RoundStage Stage, int DealerIndex, ImmutableArray<PlayerRound> Entries, bool Closed)`.
-- [ ] `sealed record Game(Guid Id, DateTimeOffset CreatedAt, DateTimeOffset? FinishedAt, bool FinishedEarly, ImmutableArray<GamePlayer> Players, int FirstDealerIndex, ImmutableArray<Round> Rounds)`.
-- [ ] `sealed record Player(Guid Id, string Name)`.
-- [ ] `sealed record Settings(int TableScale, int? StatsPlayerCount, WindowBounds? Window)` и `Settings.Default` (масштаб 100).
-- [ ] `sealed record WindowBounds(int X, int Y, int Width, int Height, bool Maximized)`.
-- [ ] Равенство записей с `ImmutableArray` сравнивает массивы по ссылке — для тестов и сравнения «до/после» решить: переопределить `Equals` или сравнивать в тестах через `BeEquivalentTo`. Записать решение.
-- [ ] Вспомогательные методы (без проверок): `Game.WithRound(int index, Func<Round, Round>)`, `Game.WithEntry(int round, int player, Func<PlayerRound, PlayerRound>)`, `Round.WithEntry(int player, Func<PlayerRound, PlayerRound>)`.
-- [ ] Константы: `MinPlayers = 3`, `MaxPlayers = 6`, `DeckSize = 36`, `MaxNameLength = 20`, `MinScale = 75`, `MaxScale = 200`, `ScaleStep = 25`.
-- [ ] Тесты `With*`: исходный объект не меняется, меняется только нужная запись.
+- [x] `RoundStage` (`Ascent`, `Plateau`, `Descent`, `FinalPlateau`), `GameStatus` (`InProgress`, `Finished`, `FinishedEarly`).
+- [x] `sealed record GamePlayer(string Name, Guid PlayerId)`.
+- [x] `sealed record PlayerRound(int? Bid, int? Tricks, bool Dark)`. Плюс `PlayerRound.Empty`.
+- [x] `sealed record Round(int Number, int Cards, RoundStage Stage, int DealerIndex, ImmutableArray<PlayerRound> Entries, bool Closed)`.
+- [x] `sealed record Game(Guid Id, DateTimeOffset CreatedAt, DateTimeOffset? FinishedAt, bool FinishedEarly, ImmutableArray<GamePlayer> Players, int FirstDealerIndex, ImmutableArray<Round> Rounds)`.
+- [x] `sealed record Player(Guid Id, string Name)`.
+- [x] `sealed record Settings(int TableScale, int? StatsPlayerCount, WindowBounds? Window)` и `Settings.Default` (масштаб 100).
+- [x] `sealed record WindowBounds(int X, int Y, int Width, int Height, bool Maximized)`.
+- [x] Равенство записей с `ImmutableArray` сравнивает массивы по ссылке — для тестов и сравнения «до/после» решить: переопределить `Equals` или сравнивать в тестах через `BeEquivalentTo`. Записать решение. Выбрано: переопределить `Equals` у `Game` и `Round` (см. решения 2.1).
+- [x] Вспомогательные методы (без проверок): `Game.WithRound(int index, Func<Round, Round>)`, `Game.WithEntry(int round, int player, Func<PlayerRound, PlayerRound>)`, `Round.WithEntry(int player, Func<PlayerRound, PlayerRound>)`.
+- [x] Константы: `MinPlayers = 3`, `MaxPlayers = 6`, `DeckSize = 36`, `MaxNameLength = 20`, `MinScale = 75`, `MaxScale = 200`, `ScaleStep = 25`.
+- [x] Тесты `With*`: исходный объект не меняется, меняется только нужная запись. Плюс тесты равенства (`EqualityTests`).
 
 ### 2.2. Правила игры
 
@@ -598,6 +598,9 @@
 | 1.1 | Пять частей работают: закреплённые части сдвигаются `TranslationX/Y` по `ScrollView.Scrolled`. Проверен и запасной способ для Windows — анимация компоновщика: `ElementCompositionPreview.GetScrollViewerManipulationPropertySet(scrollViewer)` + `ExpressionAnimation("Vector3(scroll.Translation.X, 0, 0)")` на свойство `Translation` платформенного элемента части (после `SetIsTranslationEnabled`); тоже без дёрганья, код убран | Вручную на 200% в узком окне ни один способ не дёргается; основной проще и кроссплатформенный. Запасной — если дёрганье появится на другом компьютере |
 | 1.1 | Колесо под Windows — `TableWheelScroll` (подключается в `ScoreTableView.Windows.cs` между `Loaded` и `Unloaded`): `Shift` + колесо — по горизонтали; колесо над шапкой, служебными столбцами, итогами и углами прокручивает тело; шаг — 15% видимой области за деление, как у штатного `ScrollViewer`; `Ctrl` + колесо не трогается | Штатный `ScrollViewer` не умеет `Shift` + колесо, а закреплённые части лежат вне него. Шаг измерен: 36 DIP при высоте 243, 90 DIP при 602 |
 | 1.1 | Колесо в автоматических проверках — `PostMessage(WM_MOUSEWHEEL)` в дочернее окно `InputSiteWindowClass`, курсор не двигается | UIA колесо не умеет. Нажатый `Shift` так не передать: приложение читает настоящее состояние клавиатуры |
+| 2.1 | `Game` и `Round` сравниваются по значению: `Equals` и `GetHashCode` написаны вручную, массивы сравниваются поэлементно (`AsSpan().SequenceEqual`; массив по умолчанию равен пустому), хэш — по простым полям и длинам массивов. `EqualityTests` проверяет каждое свойство, а `Changes_cover_every_property` падает, если у записи появилось свойство, которого нет в тесте, — значит, его надо добавить и в `Equals` | Равенство `ImmutableArray` ссылочное. FluentAssertions 7 сравнивает записи через их `Equals`, поэтому и `BeEquivalentTo` не помог бы без настройки. Равенство по значению позволяет сравнивать снимки игры «до/после» и в коде |
+| 2.1 | Константы — у своих типов: `Game.MinPlayers`, `Game.MaxPlayers`, `Game.DeckSize`, `Player.MaxNameLength`, `Settings.MinScale`/`MaxScale`/`ScaleStep`/`DefaultScale`, `WindowBounds.MinWidth`/`MinHeight`. Свои константы масштаба в `TableLayout` убраны — App берёт их из `Settings` | Рядом со значением, к которому относятся; одно место для каждого числа |
+| 2.1 | В `Game.WithRound`/`WithEntry` раздача задаётся индексом (от 0), а не номером | Так же, как индексы игроков и будущий `CellRef(Round, Player, …)` |
 | 1.3 | PNG — `TablePng.Write(table, stream, pixelScale = 2)`: разметка при 100%, части рисуются в своих местах (`Translate` к `PartOrigin` + обрезка по части), белый фон; 2 пикселя на DIP (таблица 6 × 28 — 2368×1784) | Чёткий текст при печати и на экранах с высокой плотностью. Время — ~0,1 с, первый раз ~0,6 с (загрузка Skia) |
 | 1.3 | Шрифт рендера — по имени: `new Font("Segoe UI")` и `new Font("Segoe UI", FontWeights.Bold)` | У `Font.Default`/`Font.DefaultBold` нет имени, и Skia берёт обычный шрифт по умолчанию — жирность в PNG пропадает. С именем жирный работает и в Win2D, и в Skia. На других платформах такого шрифта нет — возьмётся системный. OpenSans не взят: в нём нет `●`, и загрузка своего шрифта в Win2D не проверялась |
 | 1.3 | Значки ●, ▶, ✕ (и ✓ для правки) рисуются фигурами: круг, треугольник, две линии | Глифов `▶ ✕ ✓` нет ни в Segoe UI, ни в OpenSans. На экране DirectWrite подставляет другой шрифт, Skia — нет и рисует пустые квадраты. Фигуры одинаковы везде и не зависят от шрифтов |
@@ -626,3 +629,4 @@
 | 2026-11-01 | 1.1 | `TableLayout`, `ScoreTableView` (6 частей, тело в `ScrollView`), черновой рендер и `PrototypePage` на фиктивных данных, масштаб с сохранением центра и активной строки, колесо под Windows (`Shift` + колесо, колесо над закреплёнными частями); решение — пять частей работают | 1.2 |
 | 2026-11-01 | 1.2 | `KeyInput` в Core, `IPlatformInput`/`WindowsPlatformInput` (перехват клавиш на корне окна, `Ctrl` + колесо → масштаб), `TableLayout.HitTest`, события щелчков и указателя в `ScoreTableView`, журнал ввода в прототипе; простые клавиши проверены автоматически, сочетания и мышь — вручную | 1.3 |
 | 2026-11-01 | 1.3 | `TablePng` через Skia (вся таблица, 100%, 2 пикселя на DIP); шрифт по имени, значки ● ▶ ✕ фигурами — экран и PNG совпадают; итоги рисков добавлены в architecture.md §9 | 2.1 |
+| 2026-11-01 | 2.1 | Модель в `ListPoker.Core.Model`: записи, перечисления, константы, `With*`; равенство `Game`/`Round` по значению; 23 теста | 2.2 |
