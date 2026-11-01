@@ -5,8 +5,8 @@
              xmlns:table="clr-namespace:ListPokerApp.Controls.ScoreTable"
              x:Class="ListPokerApp.Prototype.PrototypePage"
              Title="Прототип таблицы">
-    <Grid RowDefinitions="Auto,*,32">
-        <FlexLayout Grid.Row="0" Padding="8,4" Wrap="Wrap" AlignItems="Center">
+    <Grid RowDefinitions="Auto,*,32" ColumnDefinitions="*,280">
+        <FlexLayout Grid.Row="0" Grid.ColumnSpan="2" Padding="8,4" Wrap="Wrap" AlignItems="Center">
             <Button Margin="2" Text="← Назад" AutomationId="Back" Clicked="OnBackClicked" />
 
             <Label Text="Игроков:" VerticalOptions="Center" Margin="12,0,0,0" />
@@ -33,6 +33,13 @@
 
         <table:ScoreTableView x:Name="ScoreTable" Grid.Row="1" />
 
-        <Label x:Name="StatusLabel" Grid.Row="2" AutomationId="Status" Padding="8,0" VerticalOptions="Center" />
+        <!-- Журнал ввода (1.2): клавиши, Ctrl + колесо, щелчки; ячейка под указателем -->
+        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Padding="8,0" Spacing="8">
+            <Label x:Name="PointerLabel" AutomationId="Pointer" Text="Под указателем: —" FontSize="12" />
+            <Label Text="Журнал (новые сверху)" FontAttributes="Bold" FontSize="12" />
+            <Label x:Name="JournalLabel" AutomationId="Journal" FontSize="12" FontFamily="Consolas" />
+        </VerticalStackLayout>
+
+        <Label x:Name="StatusLabel" Grid.Row="2" Grid.ColumnSpan="2" AutomationId="Status" Padding="8,0" VerticalOptions="Center" />
     </Grid>
 </ContentPage>

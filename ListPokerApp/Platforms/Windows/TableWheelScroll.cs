@@ -11,7 +11,10 @@ namespace ListPokerApp.Controls.ScoreTable;
 /// Колесо мыши над таблицей под Windows. Штатный ScrollViewer прокручивает только тело и только по вертикали;
 /// здесь добавлено: Shift + колесо — по горизонтали, колесо над закреплёнными частями прокручивает тело.
 /// </summary>
-/// <remarks><c>Ctrl</c> + колесо не трогается — это масштаб (подсекция 1.2).</remarks>
+/// <remarks>
+/// <c>Ctrl</c> + колесо таблицу не прокручивает: событие помечается обработанным, а масштаб по нему меняет
+/// <c>WindowsPlatformInput</c>, который слушает и обработанные события на корне окна.
+/// </remarks>
 internal sealed class TableWheelScroll
 {
     // Одно деление колеса — 120 единиц. Сдвиг на деление — 15% видимой области, как у штатного ScrollViewer
@@ -77,8 +80,14 @@ internal sealed class TableWheelScroll
         var properties = e.GetCurrentPoint(sender).Properties;
         var delta = properties.MouseWheelDelta;
         var modifiers = e.KeyModifiers;
-        if (delta == 0 || modifiers.HasFlag(VirtualKeyModifiers.Control))
+        if (delta == 0)
         {
+            return;
+        }
+
+        if (modifiers.HasFlag(VirtualKeyModifiers.Control))
+        {
+            e.Handled = true; // масштаб, а не прокрутка
             return;
         }
 

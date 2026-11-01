@@ -149,7 +149,6 @@ internal static class PrototypeRenderer
     private static void DrawBody(ICanvas canvas, PrototypeTable table, TableLayout layout, RectF dirtyRect)
     {
         var (first, last) = layout.RowsIn(dirtyRect.Top, dirtyRect.Bottom);
-        var markSize = layout.SmallFontSize;
 
         for (var index = first; index <= last; index++)
         {
@@ -164,7 +163,8 @@ internal static class PrototypeRenderer
 
                 SetFont(canvas, Font.Default, layout.FontSize, Text);
                 var bid = layout.BodyCell(index, player, PlayerColumn.Bid);
-                DrawText(canvas, cell.Bid.ToString(CultureInfo.InvariantCulture), bid with { Width = bid.Width - markSize }, 0);
+                var mark = layout.DarkMarkRect(index, player);
+                DrawText(canvas, cell.Bid.ToString(CultureInfo.InvariantCulture), bid with { Width = bid.Width - mark.Width }, 0);
                 DrawText(canvas, cell.Tricks.ToString(CultureInfo.InvariantCulture), layout.BodyCell(index, player, PlayerColumn.Tricks), 0);
 
                 canvas.FontColor = cell.Points < 0 ? Negative : cell.Tricks == cell.Bid ? Positive : Text;
@@ -175,8 +175,8 @@ internal static class PrototypeRenderer
 
                 if (cell.Dark)
                 {
-                    SetFont(canvas, Font.Default, markSize, Text);
-                    DrawText(canvas, "●", new RectF(bid.Right - markSize - layout.CellPadding / 2, bid.Y, markSize, bid.Height), 0);
+                    SetFont(canvas, Font.Default, layout.SmallFontSize, Text);
+                    DrawText(canvas, "●", mark, 0);
                 }
             }
 

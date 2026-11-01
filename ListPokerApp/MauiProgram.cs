@@ -35,6 +35,11 @@ public static class MauiProgram
     {
         services.AddSingleton<INavigationService, ShellNavigationService>();
         services.AddSingleton<IDialogService, DialogService>();
+#if WINDOWS
+        services.AddSingleton<IPlatformInput, WindowsPlatformInput>();
+#else
+        services.AddSingleton<IPlatformInput, NullPlatformInput>();
+#endif
     }
 
     // Страницы и ViewModel создаются заново при каждом переходе

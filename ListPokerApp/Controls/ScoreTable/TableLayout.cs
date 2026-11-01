@@ -169,6 +169,41 @@ public sealed class TableLayout
     /// <summary>Подпись итоговой строки в координатах угла снизу.</summary>
     public RectF FooterLabel(int footerRow) => new(0, footerRow * FooterRowHeight, SideWidth, FooterRowHeight);
 
+    /// <summary>Зона значка ● у правого края ячейки «З» в координатах тела — и для отрисовки, и для щелчка.</summary>
+    public RectF DarkMarkRect(int row, int player)
+    {
+        var bid = BodyCell(row, player, PlayerColumn.Bid);
+        var width = SmallFontSize + CellPadding;
+        return new RectF(bid.Right - width, bid.Y, width, bid.Height);
+    }
+
+    /// <summary>Ячейка тела под точкой в координатах тела; <c>null</c> — точка вне тела.</summary>
+    public TableHit? HitTest(PointF point)
+    {
+        if (point.X < 0 || point.Y < 0 || point.X >= BodyWidth || point.Y >= BodyHeight)
+        {
+            return null;
+        }
+
+        var row = Math.Min((int)(point.Y / RowHeight), RowCount - 1);
+        var player = Math.Min((int)(point.X / BlockWidth), PlayerCount - 1);
+        var x = point.X - BlockX(player);
+        var column = PlayerColumn.Bid;
+        for (var index = _playerX.Length - 1; index > 0; index--)
+        {
+            if (x >= _playerX[index])
+            {
+                column = (PlayerColumn)index;
+                break;
+            }
+        }
+
+        var zone = column == PlayerColumn.Bid && DarkMarkRect(row, player).Contains(point)
+            ? TableHitZone.DarkMark
+            : TableHitZone.Cell;
+        return new TableHit(row, player, column, zone);
+    }
+
     /// <summary>Строки раздач, которые пересекают полосу <paramref name="top"/>…<paramref name="bottom"/>.</summary>
     public (int First, int Last) RowsIn(float top, float bottom)
     {

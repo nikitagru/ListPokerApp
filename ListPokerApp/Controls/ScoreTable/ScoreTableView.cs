@@ -46,6 +46,7 @@ public sealed partial class ScoreTableView : ContentView
     private (double X, double Y)? _zoomAnchor;
     private int _scrollRequest;
     private bool _initialScrollDone;
+    private TableHit? _pointerHit;
 
     public ScoreTableView()
     {
@@ -75,6 +76,18 @@ public sealed partial class ScoreTableView : ContentView
         _grid.Add(ClipArea(_footer), 1, 2);
         Content = _grid;
 
+        // Щелчки и указатель — только по телу: в нём ячейки, которые можно выбрать.
+        var tap = new TapGestureRecognizer();
+        tap.Tapped += (_, e) => RaiseHit(CellTapped, e.GetPosition(_body));
+        var doubleTap = new TapGestureRecognizer { NumberOfTapsRequired = 2 };
+        doubleTap.Tapped += (_, e) => RaiseHit(CellDoubleTapped, e.GetPosition(_body));
+        var pointer = new PointerGestureRecognizer();
+        pointer.PointerMoved += (_, e) => SetPointerHit(HitAt(e.GetPosition(_body)));
+        pointer.PointerExited += (_, _) => SetPointerHit(null);
+        _body.GestureRecognizers.Add(tap);
+        _body.GestureRecognizers.Add(doubleTap);
+        _body.GestureRecognizers.Add(pointer);
+
         // Платформенные элементы частей существуют только между Loaded и Unloaded.
         Loaded += (_, _) => AttachPlatformInput();
         Unloaded += (_, _) => DetachPlatformInput();
@@ -82,6 +95,17 @@ public sealed partial class ScoreTableView : ContentView
 
     /// <summary>Прокрутка тела; передаёт событие <see cref="ScrollView.Scrolled"/>.</summary>
     public event EventHandler<ScrolledEventArgs>? Scrolled;
+
+    /// <summary>
+    /// Щелчок по ячейке тела. Перед <see cref="CellDoubleTapped"/> может прийти и он (WinUI выдаёт <c>Tapped</c>
+    /// на первое нажатие двойного щелчка) — обработка одиночного щелчка не должна мешать двойному.
+    /// </summary>
+    public event EventHandler<TableHit>? CellTapped;
+
+    public event EventHandler<TableHit>? CellDoubleTapped;
+
+    /// <summary>Под указателем другая ячейка тела; <c>null</c> — указатель ушёл с тела.</summary>
+    public event EventHandler<TableHit?>? PointerOverCell;
 
     public ITableContent? Table
     {
@@ -114,6 +138,25 @@ public sealed partial class ScoreTableView : ContentView
 
     /// <summary>Прокручивает тело; смещения ограничиваются размером таблицы.</summary>
     public Task ScrollToAsync(double x, double y, bool animated) => ScrollToClampedAsync(x, y, animated);
+
+    /// <summary>
+    /// Прямоугольник ячейки в координатах самого контрола — с учётом прокрутки и масштаба.
+    /// Для оверлея поверх таблицы (расшифровка «Оч»). <c>null</c>, пока нет таблицы.
+    /// </summary>
+    public Rect? CellBounds(TableHit hit)
+    {
+        if (CurrentLayout is not { } layout)
+        {
+            return null;
+        }
+
+        var cell = layout.BodyCell(hit.Row, hit.Player, hit.Column);
+        return new Rect(
+            layout.SideWidth + cell.X - _scroll.ScrollX,
+            layout.HeaderHeight + cell.Y - _scroll.ScrollY,
+            cell.Width,
+            cell.Height);
+    }
 
     /// <summary>Платформенная обработка колеса мыши; под Windows — в <c>Platforms/Windows/ScoreTableView.Windows.cs</c>.</summary>
     partial void AttachPlatformInput();
@@ -214,6 +257,28 @@ public sealed partial class ScoreTableView : ContentView
         _header.TranslationX = -x;
         _footer.TranslationX = -x;
         _side.TranslationY = -y;
+    }
+
+    private TableHit? HitAt(Point? position) =>
+        position is { } point && CurrentLayout is { } layout
+            ? layout.HitTest(new PointF((float)point.X, (float)point.Y))
+            : null;
+
+    private void RaiseHit(EventHandler<TableHit>? handler, Point? position)
+    {
+        if (HitAt(position) is { } hit)
+        {
+            handler?.Invoke(this, hit);
+        }
+    }
+
+    private void SetPointerHit(TableHit? hit)
+    {
+        if (hit != _pointerHit)
+        {
+            _pointerHit = hit;
+            PointerOverCell?.Invoke(this, hit);
+        }
     }
 
     private void TryInitialScroll()
