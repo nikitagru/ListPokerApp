@@ -97,8 +97,9 @@ public sealed partial class ScoreTableView : ContentView
     public event EventHandler<ScrolledEventArgs>? Scrolled;
 
     /// <summary>
-    /// Щелчок по ячейке тела. Перед <see cref="CellDoubleTapped"/> может прийти и он (WinUI выдаёт <c>Tapped</c>
-    /// на первое нажатие двойного щелчка) — обработка одиночного щелчка не должна мешать двойному.
+    /// Щелчок по ячейке тела. Под Windows двойной щелчок даёт только <see cref="CellDoubleTapped"/>, без одиночного
+    /// перед ним (проверено вручную); на других платформах может быть иначе, поэтому одиночный щелчок
+    /// не должен мешать двойному.
     /// </summary>
     public event EventHandler<TableHit>? CellTapped;
 
