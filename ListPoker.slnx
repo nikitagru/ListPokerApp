@@ -1,4 +1,15 @@
 <Solution>
+  <Folder Name="/Элементы решения/">
+    <File Path="specs/app-overview.md" />
+    <File Path="specs/architecture.md" />
+    <File Path="specs/data-storage.md" />
+    <File Path="specs/gamerules.md" />
+    <File Path="specs/open-questions.md" />
+    <File Path="specs/README.md" />
+    <File Path="specs/score-table.md" />
+    <File Path="specs/screens.md" />
+    <File Path="specs/tasks.md" />
+  </Folder>
   <Project Path="ListPoker.Core.Tests/ListPoker.Core.Tests.csproj" />
   <Project Path="ListPoker.Core/ListPoker.Core.csproj" />
   <Project Path="ListPokerApp/ListPokerApp.csproj" />
