@@ -34,6 +34,12 @@ internal static class PrototypeRenderer
         Color.FromArgb("#EFE8FA"), // финальное плато
     ];
 
+    // Шрифт с явным именем: у шрифта по умолчанию Skia (PNG) теряет жирность.
+    // Значков ▶ ✕ ✓ нет ни в Segoe UI, ни в OpenSans, а Skia, в отличие от DirectWrite, не подставляет
+    // другой шрифт, — поэтому ●, ▶, ✕ рисуются фигурами (см. DrawDarkMark, DrawActiveMarker, DrawForbiddenBid).
+    private static readonly Font RegularFont = new("Segoe UI");
+    private static readonly Font BoldFont = new("Segoe UI", FontWeights.Bold);
+
     public static void Draw(ICanvas canvas, PrototypeTable table, TableLayout layout, TablePart part, RectF dirtyRect)
     {
         canvas.Antialias = true;
@@ -65,7 +71,7 @@ internal static class PrototypeRenderer
         var size = layout.PartSize(TablePart.TopLeft);
         Fill(canvas, HeaderBack, new RectF(0, 0, size.Width, size.Height));
 
-        SetFont(canvas, Font.DefaultBold, layout.FontSize, Text);
+        SetFont(canvas, BoldFont, layout.FontSize, Text);
         DrawText(canvas, "№", layout.CornerCell(ServiceColumn.Number), 0);
         DrawText(canvas, "K", layout.CornerCell(ServiceColumn.Cards), 0);
         DrawText(canvas, "Сдаёт", layout.CornerCell(ServiceColumn.Dealer), layout.CellPadding, HorizontalAlignment.Left);
@@ -94,10 +100,10 @@ internal static class PrototypeRenderer
             var title = player == dealer
                 ? Truncate(table.Players[player], maxChars - DealerMark.Length) + DealerMark
                 : Truncate(table.Players[player], maxChars);
-            SetFont(canvas, Font.DefaultBold, layout.FontSize, Text);
+            SetFont(canvas, BoldFont, layout.FontSize, Text);
             DrawText(canvas, title, name, layout.CellPadding);
 
-            SetFont(canvas, Font.Default, layout.FontSize * 0.9f, MutedText);
+            SetFont(canvas, RegularFont, layout.FontSize * 0.9f, MutedText);
             DrawText(canvas, "З", layout.HeaderColumn(player, PlayerColumn.Bid), 0);
             DrawText(canvas, "В", layout.HeaderColumn(player, PlayerColumn.Tricks), 0);
             DrawText(canvas, "Оч", layout.HeaderColumn(player, PlayerColumn.Points), 0);
@@ -127,9 +133,18 @@ internal static class PrototypeRenderer
             var y = layout.RowY(index);
             Fill(canvas, RowBack(table, index), new RectF(0, y, layout.SideWidth, layout.RowHeight));
 
-            SetFont(canvas, index == table.ActiveRow ? Font.DefaultBold : Font.Default, layout.FontSize, Text);
+            SetFont(canvas, index == table.ActiveRow ? BoldFont : RegularFont, layout.FontSize, Text);
             var number = row.Number.ToString(CultureInfo.InvariantCulture);
-            DrawText(canvas, index == table.ActiveRow ? "▶" + number : number, layout.SideCell(index, ServiceColumn.Number), 0);
+            var numberCell = layout.SideCell(index, ServiceColumn.Number);
+            if (index == table.ActiveRow)
+            {
+                var markerWidth = DrawActiveMarker(canvas, layout, numberCell);
+                DrawText(canvas, number, numberCell with { X = numberCell.X + markerWidth, Width = numberCell.Width - markerWidth }, 0);
+            }
+            else
+            {
+                DrawText(canvas, number, numberCell, 0);
+            }
             DrawText(canvas, row.Cards.ToString(CultureInfo.InvariantCulture), layout.SideCell(index, ServiceColumn.Cards), 0);
 
             var dealerCell = layout.SideCell(index, ServiceColumn.Dealer);
@@ -161,10 +176,20 @@ internal static class PrototypeRenderer
             {
                 var cell = row.Cells[player];
 
-                SetFont(canvas, Font.Default, layout.FontSize, Text);
+                SetFont(canvas, RegularFont, layout.FontSize, Text);
                 var bid = layout.BodyCell(index, player, PlayerColumn.Bid);
                 var mark = layout.DarkMarkRect(index, player);
-                DrawText(canvas, cell.Bid.ToString(CultureInfo.InvariantCulture), bid with { Width = bid.Width - mark.Width }, 0);
+                var bidArea = bid with { Width = bid.Width - mark.Width };
+                if (index == table.ActiveRow && player == row.Dealer && ForbiddenBid(row) is { } forbidden)
+                {
+                    DrawForbiddenBid(canvas, layout, bidArea, forbidden);
+                    SetFont(canvas, RegularFont, layout.FontSize, Text);
+                }
+                else
+                {
+                    DrawText(canvas, cell.Bid.ToString(CultureInfo.InvariantCulture), bidArea, 0);
+                }
+
                 DrawText(canvas, cell.Tricks.ToString(CultureInfo.InvariantCulture), layout.BodyCell(index, player, PlayerColumn.Tricks), 0);
 
                 canvas.FontColor = cell.Points < 0 ? Negative : cell.Tricks == cell.Bid ? Positive : Text;
@@ -175,8 +200,7 @@ internal static class PrototypeRenderer
 
                 if (cell.Dark)
                 {
-                    SetFont(canvas, Font.Default, layout.SmallFontSize, Text);
-                    DrawText(canvas, "●", mark, 0);
+                    DrawDarkMark(canvas, layout, mark);
                 }
             }
 
@@ -204,7 +228,7 @@ internal static class PrototypeRenderer
         var size = layout.PartSize(TablePart.BottomLeft);
         Fill(canvas, HeaderBack, new RectF(0, 0, size.Width, size.Height));
 
-        SetFont(canvas, Font.DefaultBold, layout.FontSize, Text);
+        SetFont(canvas, BoldFont, layout.FontSize, Text);
         DrawText(canvas, "Счёт", layout.FooterLabel(0), layout.CellPadding, HorizontalAlignment.Left);
         DrawText(canvas, "Место", layout.FooterLabel(1), layout.CellPadding, HorizontalAlignment.Left);
 
@@ -226,10 +250,10 @@ internal static class PrototypeRenderer
             }
 
             var total = table.Totals[player];
-            SetFont(canvas, Font.DefaultBold, layout.FontSize, total < 0 ? Negative : Text);
+            SetFont(canvas, BoldFont, layout.FontSize, total < 0 ? Negative : Text);
             DrawText(canvas, Unsigned(total), layout.FooterCell(0, player), layout.CellPadding);
 
-            SetFont(canvas, Font.Default, layout.FontSize, Text);
+            SetFont(canvas, RegularFont, layout.FontSize, Text);
             DrawText(canvas, table.Places[player].ToString(CultureInfo.InvariantCulture), layout.FooterCell(1, player), layout.CellPadding);
 
             if (player > 0)
@@ -240,6 +264,65 @@ internal static class PrototypeRenderer
 
         HorizontalLine(canvas, GridLine, 1, 0, size.Width, layout.FooterRowHeight);
         HorizontalLine(canvas, BlockLine, 2, 0, size.Width, 1);
+    }
+
+    /// <summary>● — «в тёмную»: круг в центре зоны значка.</summary>
+    private static void DrawDarkMark(ICanvas canvas, TableLayout layout, RectF zone)
+    {
+        canvas.FillColor = Text;
+        canvas.FillCircle(zone.Center.X, zone.Center.Y, layout.SmallFontSize * 0.3f);
+    }
+
+    /// <summary>▶ — активная строка: треугольник у левого края ячейки №. Возвращает занятую ширину.</summary>
+    private static float DrawActiveMarker(ICanvas canvas, TableLayout layout, RectF cell)
+    {
+        var height = layout.FontSize * 0.6f;
+        var width = height * 0.8f;
+        var left = cell.X + layout.CellPadding * 0.75f;
+        var middle = cell.Center.Y;
+
+        var triangle = new PathF();
+        triangle.MoveTo(left, middle - height / 2);
+        triangle.LineTo(left + width, middle);
+        triangle.LineTo(left, middle + height / 2);
+        triangle.Close();
+        canvas.FillColor = Text;
+        canvas.FillPath(triangle);
+        return left + width - cell.X;
+    }
+
+    /// <summary>
+    /// ✕n — запрещённый заказ раздающего: крест и число, вместе по центру области.
+    /// Текст не измеряется: ширина цифры оценивается как 0,56 кегля (цифры в Segoe UI одной ширины).
+    /// </summary>
+    private static void DrawForbiddenBid(ICanvas canvas, TableLayout layout, RectF area, int forbidden)
+    {
+        var text = forbidden.ToString(CultureInfo.InvariantCulture);
+        var cross = layout.FontSize * 0.5f;
+        var gap = layout.FontSize * 0.15f;
+        var groupWidth = cross + gap + text.Length * layout.FontSize * 0.56f;
+        var left = area.Center.X - groupWidth / 2;
+        var top = area.Center.Y - cross / 2;
+
+        canvas.StrokeColor = Negative;
+        canvas.StrokeSize = Math.Max(1, 1.5f * layout.Scale);
+        canvas.StrokeLineCap = LineCap.Round;
+        canvas.DrawLine(left, top, left + cross, top + cross);
+        canvas.DrawLine(left, top + cross, left + cross, top);
+        canvas.StrokeLineCap = LineCap.Butt;
+
+        SetFont(canvas, RegularFont, layout.FontSize, Negative);
+        var textLeft = left + cross + gap;
+        canvas.DrawString(text, textLeft, area.Y, area.Right - textLeft, area.Height, HorizontalAlignment.Left, VerticalAlignment.Center);
+    }
+
+    // Как в спецификации: раздающему нельзя заказать K − (сумма заказов остальных), если это число в 0…K.
+    // В прототипе показывается в активной строке вместо заказа раздающего — проверить значок ✕ в PNG.
+    private static int? ForbiddenBid(PrototypeRow row)
+    {
+        var others = row.Cells.Where((_, player) => player != row.Dealer).Sum(cell => cell.Bid);
+        var forbidden = row.Cards - others;
+        return forbidden >= 0 && forbidden <= row.Cards ? forbidden : null;
     }
 
     private static Color RowBack(PrototypeTable table, int index) =>

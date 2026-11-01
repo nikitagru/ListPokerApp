@@ -196,6 +196,27 @@ public partial class PrototypePage : ContentPage
         }
     }
 
+    // Вся таблица в PNG через Skia (1.3) — во временную папку; путь и время — в строке состояния.
+    private void OnExportPngClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            var path = Path.Combine(Path.GetTempPath(), "ListPokerPrototype", $"table-{DateTime.Now:HHmmss-fff}.png");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            var timer = System.Diagnostics.Stopwatch.StartNew();
+            using (var file = File.Create(path))
+            {
+                TablePng.Write(_table, file);
+            }
+
+            StatusLabel.Text = string.Create(CultureInfo.InvariantCulture, $"PNG ({timer.ElapsedMilliseconds} мс): {path}");
+        }
+        catch (Exception ex)
+        {
+            StatusLabel.Text = "PNG: " + ex.Message;
+        }
+    }
+
     private void ShowTable(PrototypeTable table)
     {
         _table = table;

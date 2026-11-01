@@ -29,6 +29,7 @@
             <Button Margin="2" Text="↔" AutomationId="AnimateHorizontal" Clicked="OnAnimateHorizontalClicked" />
 
             <Button Text="Снимок" AutomationId="Capture" Clicked="OnCaptureClicked" Margin="12,0,0,0" />
+            <Button Text="PNG" AutomationId="ExportPng" Clicked="OnExportPngClicked" Margin="2" />
         </FlexLayout>
 
         <table:ScoreTableView x:Name="ScoreTable" Grid.Row="1" />
