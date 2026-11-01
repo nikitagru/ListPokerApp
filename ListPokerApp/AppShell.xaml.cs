@@ -13,5 +13,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(NavigationRoutes.Game, typeof(GamePage));
         Routing.RegisterRoute(NavigationRoutes.Players, typeof(PlayersPage));
         Routing.RegisterRoute(NavigationRoutes.PlayerGames, typeof(PlayerGamesPage));
+#if DEBUG
+        Routing.RegisterRoute(NavigationRoutes.Prototype, typeof(Prototype.PrototypePage));
+#endif
     }
 }

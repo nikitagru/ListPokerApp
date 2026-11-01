@@ -9,4 +9,8 @@ public interface INavigationService
     Task GoToPlayers();
     Task GoToPlayerGames(Guid playerId);
     Task GoBack();
+
+#if DEBUG
+    Task GoToPrototype();
+#endif
 }

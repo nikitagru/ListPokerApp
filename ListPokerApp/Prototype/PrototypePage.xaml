@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Временная страница прототипа (секция 1). Маршрут есть только в DEBUG. -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:table="clr-namespace:ListPokerApp.Controls.ScoreTable"
+             x:Class="ListPokerApp.Prototype.PrototypePage"
+             Title="Прототип таблицы">
+    <Grid RowDefinitions="Auto,*,32">
+        <FlexLayout Grid.Row="0" Padding="8,4" Wrap="Wrap" AlignItems="Center">
+            <Button Margin="2" Text="← Назад" AutomationId="Back" Clicked="OnBackClicked" />
+
+            <Label Text="Игроков:" VerticalOptions="Center" Margin="12,0,0,0" />
+            <Button Margin="2" Text="3" AutomationId="Players3" Clicked="OnPlayersClicked" />
+            <Button Margin="2" Text="4" AutomationId="Players4" Clicked="OnPlayersClicked" />
+            <Button Margin="2" Text="5" AutomationId="Players5" Clicked="OnPlayersClicked" />
+            <Button Margin="2" Text="6" AutomationId="Players6" Clicked="OnPlayersClicked" />
+
+            <Label Text="Строка:" VerticalOptions="Center" Margin="12,0,0,0" />
+            <Button Margin="2" Text="▲" AutomationId="RowUp" Clicked="OnRowUpClicked" />
+            <Button Margin="2" Text="▼" AutomationId="RowDown" Clicked="OnRowDownClicked" />
+
+            <Label Text="Масштаб:" VerticalOptions="Center" Margin="12,0,0,0" />
+            <Button Margin="2" Text="−" AutomationId="ZoomOut" Clicked="OnZoomOutClicked" />
+            <Button Margin="2" x:Name="ZoomButton" Text="100%" AutomationId="ZoomReset" Clicked="OnZoomResetClicked" />
+            <Button Margin="2" Text="+" AutomationId="ZoomIn" Clicked="OnZoomInClicked" />
+
+            <Label Text="Анимация:" VerticalOptions="Center" Margin="12,0,0,0" />
+            <Button Margin="2" Text="↕" AutomationId="AnimateVertical" Clicked="OnAnimateVerticalClicked" />
+            <Button Margin="2" Text="↔" AutomationId="AnimateHorizontal" Clicked="OnAnimateHorizontalClicked" />
+
+            <Button Text="Снимок" AutomationId="Capture" Clicked="OnCaptureClicked" Margin="12,0,0,0" />
+        </FlexLayout>
+
+        <table:ScoreTableView x:Name="ScoreTable" Grid.Row="1" />
+
+        <Label x:Name="StatusLabel" Grid.Row="2" AutomationId="Status" Padding="8,0" VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

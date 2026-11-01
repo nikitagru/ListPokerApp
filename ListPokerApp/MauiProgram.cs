@@ -45,5 +45,8 @@ public static class MauiProgram
         services.AddTransient<GamePage>().AddTransient<GameViewModel>();
         services.AddTransient<PlayersPage>().AddTransient<PlayersViewModel>();
         services.AddTransient<PlayerGamesPage>().AddTransient<PlayerGamesViewModel>();
+#if DEBUG
+        services.AddTransient<Prototype.PrototypePage>();
+#endif
     }
 }

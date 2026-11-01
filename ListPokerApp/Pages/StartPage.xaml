@@ -5,7 +5,7 @@
              x:Class="ListPokerApp.Pages.StartPage"
              x:DataType="vm:StartViewModel"
              Title="Расписной покер">
-    <VerticalStackLayout Padding="24" Spacing="12">
+    <VerticalStackLayout x:Name="Root" Padding="24" Spacing="12">
         <Label Text="Расписной покер" FontSize="24" />
         <Button Text="Новая игра" Command="{Binding NewGameCommand}" HorizontalOptions="Start" />
         <Button Text="Игроки" Command="{Binding PlayersCommand}" HorizontalOptions="Start" />

@@ -14,4 +14,9 @@ public sealed partial class StartViewModel(INavigationService navigation) : View
     // Временно, до секции 5: открыть таблицу без настоящей игры.
     [RelayCommand]
     private Task OpenGame() => navigation.GoToGame(Guid.Empty);
+
+#if DEBUG
+    [RelayCommand]
+    private Task OpenPrototype() => navigation.GoToPrototype();
+#endif
 }

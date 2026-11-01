@@ -16,5 +16,9 @@ public sealed class ShellNavigationService : INavigationService
 
     public Task GoBack() => Go("..");
 
+#if DEBUG
+    public Task GoToPrototype() => Go(NavigationRoutes.Prototype);
+#endif
+
     private static Task Go(string route) => Shell.Current.GoToAsync(route);
 }
